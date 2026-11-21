@@ -1,0 +1,247 @@
+# https://programminghistorian.org/en/lessons/analyzing-multilingual-text-nltk-spacy-stanza
+
+import nltk, spacy, stanza # pip install each
+#nltk.download('punkt')
+
+from nltk.tokenize import sent_tokenize
+
+from bs4 import BeautifulSoup			#Libraries needed for API scraping
+from bs4.element import Comment
+import urllib.request
+from urllib.parse import urlparse, urlsplit
+
+from spacy.language import Language		#Language detection and confidence
+from spacy_langdetect import LanguageDetector
+
+#python -m spacy downnload ru_core_news_sm	#Part of Speech tagging, russian specific, additional downloads needed for other languages
+
+from googletrans import Translate
+
+import pandas as pd 	#for .xlsx export, pip install pandas openpyxl
+
+def select_tokenization_language():
+    targetLanguage = input("Select target language from the following options: \n [1] Czech \n [2] Danish \n [3] Dutch \n [4] English \n [5] Estonian \n [6] Finnish \n [7] French \n [8] German \n [9] Greek \n [10] Italian \n [11] Norwegian \n [12] Polish \n [13] Portuguese \n [14] Russian \n [15] Slovene \n [16] Spansih \n [17] Swedish \n [18] Turkish \n\n [0] Exit Language Processing")
+
+
+    if targetLanguage == "1":
+        targetLanguage = "czech"
+    elif targetLanguage == "2":
+        targetLanguage = "dannish"
+    elif targetLanguage == "3":
+        targetLanguage = "dutch"
+    elif targetLanguage == "4":
+        targetLanguage = "english"
+    elif targetLanguage == "5":
+        targetLanguage = "estonian"
+    elif targetLanguage == "6":
+        targetLanguage = "finnish"
+    elif targetLanguage == "7":
+        targetLanguage = "french"
+    elif targetLanguage == "8":
+        targetLanguage = "german"
+    elif targetLanguage == "9":
+        targetLanguage = "greek"
+    elif targetLanguage == "10":
+        targetLanguage = "italian"
+    elif targetLanguage == "11":
+        targetLanguage = "norwegian"
+    elif targetLanguage == "12":
+        targetLanguage = "polish"
+    elif targetLanguage == "13":
+        targetLanguage = "portuguese"
+    elif targetLanguage == "14":
+        targetLanguage = "russian"
+    elif targetLanguage == "15":
+        targetLanguage = "slovene"
+    elif targetLanguage == "16":
+        targetLanguage = "spanish"
+    elif targetLanguage == "17":
+        targetLanguage = "swedish"
+    elif targetLanguage == "18":
+        targetLanguage = "turkish"
+    elif targetLanguage == "0":
+        print("Exiting program ... please standby")
+    elif targetLanguage not in range(0-19):
+        print("Invalid input ... please select from the list above")
+        continue
+
+
+def translation_language_selection():
+    targetLanguage = input("Please select the target translation language from the following options:  \n [1] Czech \n [2] Danish \n [3] Dutch \n [4] English \n [5] Estonian \n [6] Finnish \n [7] French \n [8] German \n [9] Greek \n [10] Italian \n [11] Norwegian \n [12] Polish \n [13] Portuguese \n [14] Russian \n [15] Slovene \n [16] Spansih \n [17] Swedish \n [18] Turkish \n\n [0] Exit Language Processing")
+
+    if targetLanguage == "1":
+        targetLanguage = "cs"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "2":
+        targetLanguage = "da"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "3":
+        targetLanguage = "nl"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "4":
+        targetLanguage = "en"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "5":
+        targetLanguage = "et"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "6":
+        targetLanguage = "fi"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "7":
+        targetLanguage = "fr"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "8":
+        targetLanguage = "de"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "9":
+        targetLanguage = "el"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "10":
+        targetLanguage = "it"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "11":
+        targetLanguage = "no"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "12":
+        targetLanguage = "pl"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "13":
+        targetLanguage = "pt"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "14":
+        targetLanguage = "ru"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "15":
+        targetLanguage = "sl"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "16":
+        targetLanguage = "es"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "17":
+        targetLanguage = "sv"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "18":
+        targetLanguage = "tr"
+        print("Selection saved ... processing translation")
+    elif targetLanguage == "0":
+        print("Exiting program ... please standby")
+    elif targetLanguage not in range(0-19):
+        print("Invalid input ... please select from the list above")
+        continue    
+
+
+'''
+Scrape the API of input URL and export body text to a txt file titled "webpageText.txt"
+'''
+
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
+
+def text_from_html(body):
+    soup = BeautifulSoup(body, 'html.parser')
+    texts = soup.findAll(text=True)
+    visible_texts = filter(tag_visible, texts)  
+    return u" ".join(t.strip() for t in visible_texts)
+
+ 
+url = input("Input a URL to scrape for language processing --> ")	# Need to validate the url --> 	https://www.codingdeeply.com/python-check-if-url-is-valid/
+parsedUrl = urlparse(url)
+if parsedUrl.scheme and parsedUrl.netloc:
+    print("Valid URL ... Standby for results")
+    html = urllib.request.urlopen(url).read() #might need to encapsulate all in BeautifulSoup()
+    print(text_from_html(html))	# create .txt with this output
+    with open("webpageText.txt", 'w') as file:
+        txt = html.find('div', {'class' : 'body'})
+        file.write(html2text.html2text(txt)
+
+else:
+    print("Invalid URL ... ensure input follows format 'https://www.example.com'")
+
+
+#clean the .txt of new lines to avoid irregular breaking of words, probably need a 'with open' line for webpageText.txt
+with open("webpageText.txt", "w") as file:
+    cleanedFile = file.replace("\n", " ")
+
+#create a list of sentences of the file
+
+
+fileSentenceTokenized = sent_tokenize(cleanedFile, targetLanguage())
+
+# append each sentence to a new text file
+
+for line in fileSentenceTokenized:
+    with open("Text_Line_By_Line.txt", 'a') as file:
+        print(line)
+
+# Alternative to TextCat, will give confidence score
+
+langTbl = PrettyTable("Line Index", "Language", "Confidence")
+
+# setting up our pipeline
+Language.factory("language_detector")
+nlp.add_pipe('language_detector', last=True)
+
+lineLangs = {} 		#initiate dict to store as k: line, v: [lang, confidence]
+
+with open("Text_Line_By_Line.txt", 'r') as file:
+    for eachLine in file:
+        nlp(eachLine)
+        lineLangs.setdefault(index(eachLine), [0]).append(lang)
+        lineLangs.setdefault(index(eachLine), [1]).append(confidence)		# find how these are output, likely need to create a variable to store each in
+                                            # using ^ variable - print("{:.2f}".format(int(confidence)), '%')
+    for k, v[1], v[2] in linLangs.items():
+        langTbl.add_row(k, v[0], v[1])	# add PrettyTable rows to output under headers: "Line Index", "Language", "Confidence" 
+
+    print(langTbl.get_string(sortby="Line Index"))	
+
+
+# Part-of-Speech (POS) Tagging
+
+posTbl = PrettyTable("Word", "Part-of-Speech", "Lemma")
+uniqueWords = set()
+posNlp = spacy.load("ru_core_news_sm")
+translator = Translator()
+
+with open("Text_Line_By_Line.txt", 'r') as file:
+    for eachLine in file:
+        taggedWords = posNlp(eachLine)
+    for token in taggedWords:
+        posTbl.add_row(token.text, token.pos_, token.lemma_)	# add PrettyTable rows to output under headers: "Word", "Part-of-Speech" and sort by POS 
+        uniqueWords.add(token.lemma_)	
+
+print(posTbl.get_string(sortby = "Part-of-Speech")
+
+
+
+# Create dictionary from uniquewords set as key, translation as value
+
+
+# https://www.geeksforgeeks.org/pydictionary-module-in-python/
+
+
+wordDict = dict.fromkeys(uniqueWords)
+
+translationTarget = translation_language_selection()
+for k in wordDict.items():
+translation = translator.translate(k, src=translationTarget, dest=en)	# verify language designation, change for different language requirements
+        wordDict.setdefault(k, translation)
+
+print(wordDict)		# comment out, use to verify dictionary creation
+
+exportData = pd.DataFrame(wordDict)	#Convert dictionary to dataframe for export as .xlsx
+exportData.to_excel("Translation_Dictionary.xlsx", index=False)		#export dataframe to Excel
+
+print("Set contents have been exported to uniqueWordsOutput.xml ... script complete")
+
+
+#TODO: create function to select spacy language download
+
+# Arabic documentation https://www.nltk.org/_modules/nltk/stem/isri.html
+# Farsi documentation https://github.com/roshan-research/hazm
+# Korean documentation https://konlpy.org/en/latest/
+# Chinese documentation https://medium.com/data-science/chinese-natural-language-pre-processing-an-introduction-995d16c2705f
+# 
